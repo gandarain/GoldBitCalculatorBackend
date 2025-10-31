@@ -22,6 +22,6 @@ export default [
       "eqeqeq": ["error", "always"],
       "semi": ["error", "never"],
       "quotes": ["error", "single"],
-    },
-  },
+    }
+  }
 ]
