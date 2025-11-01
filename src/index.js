@@ -30,7 +30,6 @@ const PORT = process.env.PORT || 8080
 const HOST = '0.0.0.0'
 
 const server = app.listen(PORT, HOST, () => {
-  console.log('✅ MongoDB connected successfully')
   console.log(`🚀 Server running on http://${HOST}:${PORT}`)
 })
 
