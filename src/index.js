@@ -8,19 +8,25 @@ import userRoutes from './routes/userRoutes.js'
 import swaggerSpec from './config/swagger.js'
 
 dotenv.config()
-connectDB()
 
 const app = express()
 app.use(express.json())
+
+app.get('/', (req, res) => {
+  res.send('✅ GoldBit API running...')
+})
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/api/otp', otpRoutes)
 app.use('/api/users', userRoutes)
 
-app.get('/', (req, res) => res.send('GoldBit API running...'))
-
 const PORT = process.env.PORT || 8080
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`)
+connectDB().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${PORT}`)
+  })
+}).catch(err => {
+  console.error('❌ MongoDB connection failed:', err)
+  process.exit(1)
 })
