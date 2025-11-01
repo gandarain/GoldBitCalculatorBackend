@@ -1,11 +1,11 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 
 import { connectDB } from './config/db.js'
 import otpRoutes from './routes/otpRoutes.js'
 import userRoutes from './routes/userRoutes.js'
+import swaggerSpec from './config/swagger.js'
 
 dotenv.config()
 connectDB()
@@ -13,24 +13,6 @@ connectDB()
 const app = express()
 app.use(express.json())
 
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'GoldBit API Documentation',
-      version: '1.0.0',
-      description: 'Dokumentasi API GoldBit',
-    },
-    servers: [
-      {
-        url: `http://localhost:${process.env.PORT || 4000}`,
-      },
-    ],
-  },
-  apis: ['./src/routes/*.js']
-}
-
-const swaggerSpec = swaggerJsdoc(swaggerOptions)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.use('/api/otp', otpRoutes)

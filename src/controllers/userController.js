@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/userModel.js'
 import Otp from '../models/otpModel.js'
 import { OTP_TYPE } from '../constants/otpTypes.js'
+import { isStrongPassword } from '../utils/validatePassword.js'
 
 export const registerUser = async (req, res) => {
   try {
@@ -21,6 +22,13 @@ export const registerUser = async (req, res) => {
 
     if (!otpRecord || !otpRecord.isVerified)
       return res.status(400).json({ message: 'Email not verified by OTP yet' })
+
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({
+        message:
+          'Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol',
+      })
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = await User.create({ fullName, email, password: hashedPassword })
@@ -93,5 +101,80 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Login failed', error: error.message })
+  }
+}
+
+export const getProfile = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' })
+    }
+
+    res.json({
+      message: 'Profile fetched successfully',
+      user: req.user,
+    })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Failed to fetch profile', error: error.message })
+  }
+}
+
+export const updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body
+    const user = req.user
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required' })
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password)
+
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' })
+    }
+
+    if (!isStrongPassword(newPassword)) {
+      return res.status(400).json({
+        message:
+          'Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol',
+      })
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+    user.password = hashedPassword
+    
+    await user.save()
+
+    res.json({ message: 'Password updated successfully' })
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update password', error: error.message })
+  }
+}
+
+export const updateProfile = async (req, res) => {
+  try {
+    const user = req.user
+    const { fullName } = req.body
+
+    if (!fullName || fullName.trim() === '') {
+      return res.status(400).json({ message: 'Full name is required' })
+    }
+
+    user.fullName = fullName.trim()
+
+    await user.save()
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update profile', error: error.message })
   }
 }

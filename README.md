@@ -20,10 +20,10 @@ GoldBit is a backend API built with Node.js, designed to help users allocate the
 - **User Registration:** Create new user accounts
 - **OTP Request:** Request One-Time Password via email
 - **OTP Verification:** Verify OTP for secure actions
-
-**In Development:**
 - **Login:** Secure user authentication
 - **User Profile:** View and manage user details
+
+**In Development:**
 - **Savings Calculation:** Calculate percentage allocation between Bitcoin and Gold
 - **Live Price Data:** Fetch current prices for Bitcoin and Gold
 - **More Features:** Additional savings tools and insights coming soon
@@ -103,8 +103,8 @@ src/
 
 - [x] User Registration
 - [x] OTP Request & Verification
-- [ ] Login
-- [ ] User Profile Management
+- [X] Login
+- [X] User Profile Management
 - [ ] Savings Percentage Calculation (Bitcoin & Gold)
 - [ ] Real-time Price Data Integration
 - [ ] Advanced Savings Features
