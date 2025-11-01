@@ -22,4 +22,5 @@ const HOST = '0.0.0.0'
 
 app.listen(PORT, HOST, () => console.log(`🚀 Server running on http://${HOST}:${PORT}`))
 
-process.stdin.resume()
+const keepAlive = () => setInterval(() => {}, 1 << 30)
+keepAlive()
