@@ -8,21 +8,19 @@ import userRoutes from './routes/userRoutes.js'
 import swaggerSpec from './config/swagger.js'
 
 dotenv.config()
-
 connectDB()
 
 const app = express()
-
 app.use(express.json())
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/api/otp', otpRoutes)
 app.use('/api/users', userRoutes)
 
-app.get('/', (req, res) => res.status(200).send('GoldBit API running...'))
+app.get('/', (req, res) => res.send('GoldBit API running...'))
 
+const PORT = process.env.PORT || 8080
 
-const PORT = process.env.PORT || 4000
-
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`)
 })
