@@ -8,19 +8,21 @@ import userRoutes from './routes/userRoutes.js'
 import swaggerSpec from './config/swagger.js'
 
 dotenv.config()
+
 connectDB()
 
 const app = express()
+
 app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/api/otp', otpRoutes)
 app.use('/api/users', userRoutes)
-app.get('/', (req, res) => res.send('GoldBit API running...'))
+
+app.get('/', (req, res) => res.status(200).send('GoldBit API running...'))
+
 
 const PORT = process.env.PORT || 4000
-const HOST = '0.0.0.0'
 
-app.listen(PORT, HOST, () => console.log(`🚀 Server running on http://${HOST}:${PORT}`))
-
-const keepAlive = () => setInterval(() => {}, 1 << 30)
-keepAlive()
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`)
+})
