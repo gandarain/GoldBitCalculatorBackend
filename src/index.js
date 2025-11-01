@@ -21,12 +21,24 @@ app.use('/api/otp', otpRoutes)
 app.use('/api/users', userRoutes)
 
 const PORT = process.env.PORT || 8080
+const HOST = '0.0.0.0'
 
-connectDB().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running on port ${PORT}`)
+connectDB()
+  .then(() => {
+    const server = app.listen(PORT, HOST, () => {
+      console.log('✅ MongoDB connected successfully')
+      console.log(`🚀 Server running on http://${HOST}:${PORT}`)
+    })
+
+    process.on('SIGTERM', () => {
+      console.log('🛑 Shutting down gracefully...')
+      server.close(() => {
+        console.log('✅ Server closed.')
+        process.exit(0)
+      })
+    })
   })
-}).catch(err => {
-  console.error('❌ MongoDB connection failed:', err)
-  process.exit(1)
-})
+  .catch(err => {
+    console.error('❌ MongoDB connection failed:', err)
+    process.exit(1)
+  })

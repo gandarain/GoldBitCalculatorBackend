@@ -30,5 +30,8 @@
     "nodemailer": "^7.0.10",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
