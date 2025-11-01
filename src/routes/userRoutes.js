@@ -1,5 +1,6 @@
 import express from 'express'
-import { registerUser } from '../controllers/userController.js'
+
+import { registerUser, resetPassword, loginUser } from '../controllers/userController.js'
 
 const router = express.Router()
 
@@ -14,13 +15,9 @@ const router = express.Router()
  * @swagger
  * /api/users/register:
  *   post:
- *     summary: Register a new user (after OTP verification)
- *     description: >
- *       This endpoint registers a new user.  
- *       Registration can only proceed **after the user's email has been verified via OTP** 
- *       using `type: REGISTER`.
- *     tags:
- *       - Users
+ *     summary: User Registration
+ *     tags: [Users]
+ *     description: Register a new user after OTP verification.
  *     requestBody:
  *       required: true
  *       content:
@@ -37,45 +34,88 @@ const router = express.Router()
  *                 example: "John Doe"
  *               email:
  *                 type: string
- *                 example: "johndoe@gmail.com"
+ *                 example: "john.doe@example.com"
  *               password:
  *                 type: string
  *                 example: "P@ssw0rd123"
  *     responses:
  *       200:
- *         description: "Registration successful"
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Registration successful"
- *                 token:
- *                   type: string
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *         description: Registration successful
  *       400:
- *         description: "Validation failed (e.g. missing fields, email already registered, or OTP not verified)"
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Email not yet verified via OTP"
+ *         description: Validation error or unverified OTP
  *       500:
- *         description: "Server error"
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Registration failed"
+ *         description: Server error
  */
 router.post('/register', registerUser)
+
+/**
+ * @swagger
+ * /api/users/reset-password:
+ *   post:
+ *     summary: Reset Password
+ *     tags: [Users]
+ *     description: Reset the user's password after OTP verification for forgot password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "john.doe@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "NewP@ssword123"
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: OTP not verified or invalid input
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/reset-password', resetPassword)
+
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: User Login
+ *     tags: [Users]
+ *     description: Authenticate user and return JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: "john.doe@example.com"
+ *               password:
+ *                 type: string
+ *                 example: "P@ssw0rd123"
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid email or password
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/login', loginUser)
 
 export default router
