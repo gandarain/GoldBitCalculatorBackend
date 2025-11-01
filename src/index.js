@@ -9,36 +9,35 @@ import swaggerSpec from './config/swagger.js'
 
 dotenv.config()
 
+connectDB()
+
 const app = express()
 app.use(express.json())
-
-app.get('/', (req, res) => {
-  res.send('✅ GoldBit API running...')
-})
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/api/otp', otpRoutes)
 app.use('/api/users', userRoutes)
 
+app.get('/', (req, res) => {
+  res.send('🚀 GoldBit API running...')
+})
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' })
+})
+
 const PORT = process.env.PORT || 8080
 const HOST = '0.0.0.0'
 
-connectDB()
-  .then(() => {
-    const server = app.listen(PORT, HOST, () => {
-      console.log('✅ MongoDB connected successfully')
-      console.log(`🚀 Server running on http://${HOST}:${PORT}`)
-    })
+const server = app.listen(PORT, HOST, () => {
+  console.log('✅ MongoDB connected successfully')
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`)
+})
 
-    process.on('SIGTERM', () => {
-      console.log('🛑 Shutting down gracefully...')
-      server.close(() => {
-        console.log('✅ Server closed.')
-        process.exit(0)
-      })
-    })
+process.on('SIGTERM', () => {
+  console.log('🛑 SIGTERM received, shutting down gracefully...')
+  server.close(() => {
+    console.log('✅ Server closed.')
+    process.exit(0)
   })
-  .catch(err => {
-    console.error('❌ MongoDB connection failed:', err)
-    process.exit(1)
-  })
+})
