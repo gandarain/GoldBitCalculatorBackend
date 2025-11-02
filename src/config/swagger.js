@@ -4,9 +4,9 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'GoldBit API Documentation',
+      title: 'GoldBitCalculator API Documentation',
       version: '1.0.0',
-      description: 'Dokumentasi API GoldBit',
+      description: 'GoldBitCalculator API Documentation',
     },
     components: {
       securitySchemes: {

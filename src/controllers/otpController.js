@@ -1,16 +1,7 @@
-import nodemailer from 'nodemailer'
-
 import Otp from '../models/otpModel.js'
 import User from '../models/userModel.js'
 import { OTP_TYPE } from '../constants/otpTypes.js'
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-})
+import { sendMail } from '../utils/mailer.js'
 
 export const requestOtp = async (req, res) => {
   try {
@@ -35,13 +26,11 @@ export const requestOtp = async (req, res) => {
       { otp, expiresAt, isVerified: false },
       { upsert: true }
     )
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Your GoldBit OTP Code',
-      text: `Your OTP code is ${otp}. It will expire in 5 minutes.`,
-    })
+    
+    const subject = 'Your GoldBit OTP Code'
+    const text = `Your OTP code is ${otp}. It will expire in 5 minutes.`
+    
+    await sendMail(email, subject, text)
 
     res.json({ message: 'OTP sent successfully' })
   } catch (error) {
