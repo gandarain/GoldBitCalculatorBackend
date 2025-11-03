@@ -47,8 +47,7 @@ export const verifyOtp = async (req, res) => {
     if (record.expiresAt < new Date()) return res.status(400).json({ message: 'OTP expired' })
     if (record.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' })
 
-    record.isVerified = true
-    await record.save()
+    await Otp.deleteOne({ _id: record._id })
 
     res.json({ message: 'OTP verified successfully' })
   } catch (error) {
