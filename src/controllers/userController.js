@@ -15,29 +15,22 @@ export const registerUser = async (req, res) => {
 
     const existingUser = await User.findOne({ email })
 
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' })
+    }
 
     const otpRecord = await Otp.findOne({ email, type: OTP_TYPE.REGISTER })
 
-    if (!otpRecord || !otpRecord.isVerified)
+    if (otpRecord) {
       return res.status(400).json({ message: 'Email not verified by OTP yet' })
-
-    if (!isStrongPassword(password)) {
-      return res.status(400).json({
-        message:
-          'Password must be at least 8 characters long and include uppercase, lowercase, number, and symbol',
-      })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
     const newUser = await User.create({ fullName, email, password: hashedPassword })
 
-    await Otp.deleteOne({ email, type: OTP_TYPE.REGISTER })
-
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
 
-    res.json({ message: 'Registration successful', token })
+    return res.json({ message: 'Registration successful', token })
   } catch (error) {
     res.status(500).json({ message: 'Registration failed', error: error.message })
   }
