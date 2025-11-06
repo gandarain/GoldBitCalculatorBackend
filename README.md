@@ -35,7 +35,7 @@ GoldBit is a backend API built with Node.js, designed to help users allocate the
 - **Node.js** v22.15.1
 - **Express.js** for RESTful API
 - **Mongoose** for MongoDB database operations
-- **Nodemailer** for sending emails (including OTP)
+- **Brevo** for sending emails (including OTP)
 - **Swagger** for interactive API documentation
 
 ---
