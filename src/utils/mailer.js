@@ -1,25 +1,28 @@
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
-
-dotenv.config()
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  debug: true,
-  logger: true
-})
+import axios from 'axios'
 
 export const sendMail = async (to, subject, text) => {
-  await transporter.sendMail({
-    from: `"GoldBit Calculator" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    text
-  })
+  try {
+    const data = {
+      sender: {
+        name: 'GoldBit Calculator',
+        email: 'goldbitcalculator@gmail.com',
+      },
+      to: [{ email: to }],
+      subject,
+      textContent: text,
+    }
+
+    const headers = {
+      'api-key': process.env.BREVO_API_KEY,
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+    }
+
+    const response = await axios.post(process.env.BREVO_API_URL, data, { headers })
+
+    console.log('✅ Email sent via Brevo:', response.data)
+  } catch (error) {
+    console.error('❌ Failed to send email via Brevo:', error.response?.data || error.message)
+    throw new Error('Failed to send OTP email')
+  }
 }
